@@ -8,6 +8,8 @@ Plug 'mbbill/undotree'
 Plug 'ryanoasis/vim-devicons'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 
 call plug#end()
 
@@ -20,8 +22,18 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 "fzf config
-let g:fzf_layout = { 'down': '30%' }
+" let g:fzf_layout = { 'down': '30%' }
+" ignore nodemodules
+let $FZF_DEFAULT_COMMAND = 'ag -g ""' 
+nnoremap <C-p> :FZF<CR>
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-s': 'split',
+  \ 'ctrl-v': 'vsplit'
+  \}
 
+"COC configuration
+let g:coc_global_extensions = ['coc-emmet', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier', 'coc-tsserver']
 
 "Specific VIM configuration
 "===================================
@@ -59,9 +71,9 @@ set undofile
 "===================================
 
 "Open window plugin
-nnoremap <leader>u :UndotreeShow<CR>
-map <leader>e :NERDTreeToggle<CR>
-map <leader>f :Files<CR>
+nnoremap <C-u> :UndotreeShow<CR>
+map <C-e> :NERDTreeToggle<CR>
+" map <leader>f :Files<CR>
 
 "go to normal mode with kj 
 inoremap kj <Esc>
@@ -87,12 +99,16 @@ inoremap <C-l> <Right>
 nnoremap <silent> <C-]> :vertical resize +5<CR>
 nnoremap <silent> <C-[> :vertical resize -5<CR>
 
-"move between window
-nnoremap <C-j> <C-w>j<C-w>_
-nnoremap <C-k> <C-w>k<C-w>_
-nnoremap <C-h> <C-w>h<C-w>_
-nnoremap <C-l> <C-w>l<C-w>_
-
+" use alt+hjkl to move between split/vsplit panels using Alt
+tnoremap <A-h> <C-\><C-n><C-w>h
+tnoremap <A-j> <C-\><C-n><C-w>j
+tnoremap <A-k> <C-\><C-n><C-w>k
+tnoremap <A-l> <C-\><C-n><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+ 
 "move between tabs
 nnoremap <S-l> :tabprevious<CR>
 nnoremap <S-h> :tabnext<CR>
@@ -103,8 +119,21 @@ nnoremap <C-T> :vsplit<CR>
 nnoremap <leader>% :source % <Enter>
 
 "open terminal below
-nnoremap <silent> <leader>` :terminal<CR>
-inoremap <silent> <leader>` <Esc>:terminal<CR>
+" open new split panes to right and below
+set splitright
+set splitbelow
+" " turn terminal to normal mode with escape
+tnoremap <Esc> <C-\><C-n>
+" " start terminal in insert mode
+au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+" " open terminal on ctrl+n
+function! OpenTerminal()
+    " use this for bash
+    " split term://bash
+    split term://powershell
+    resize 10
+endfunction
+nnoremap <leader>` :call OpenTerminal()<CR>
 
 "quit
 nnoremap <leader>q :q<CR>
